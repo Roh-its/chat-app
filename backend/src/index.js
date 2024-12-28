@@ -16,7 +16,10 @@ dotenv.config();
 const PORT = process.env.PORT;
 const __dirname = path.resolve();
 
-app.use(express.json());
+// Increase payload size limit
+app.use(express.json({ limit: "100mb" })); // Adjust as necessary, e.g., "100mb"
+app.use(express.urlencoded({ limit: "50mb", extended: true })); // To handle form data
+
 app.use(cookieParser());
 app.use(
   cors({
@@ -37,6 +40,6 @@ if (process.env.NODE_ENV === "production") {
 }
 
 server.listen(PORT, () => {
-  console.log("server is running on PORT:" + PORT);
+  console.log("Server is running on PORT:" + PORT);
   connectDB();
 });

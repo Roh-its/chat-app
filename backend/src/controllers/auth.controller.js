@@ -7,8 +7,8 @@ import express from "express";
 const app = express();
 
 // Increase the body-parser limit
-app.use(express.json({ limit: "50mb" }));
-app.use(express.urlencoded({ limit: "50mb", extended: true }));
+app.use(express.json({ limit: "100mb" })); // Adjust the limit to a very large size
+app.use(express.urlencoded({ limit: "100mb", extended: true }));
 
 // Signup Controller
 export const signup = async (req, res) => {
@@ -97,6 +97,7 @@ export const logout = (req, res) => {
   }
 };
 
+
 // Update Profile Controller
 export const updateProfile = async (req, res) => {
   try {
@@ -107,7 +108,11 @@ export const updateProfile = async (req, res) => {
       return res.status(400).json({ message: "Profile pic is required" });
     }
 
-    const uploadResponse = await cloudinary.uploader.upload(profilePic);
+    // Upload image to Cloudinary
+    const uploadResponse = await cloudinary.uploader.upload(profilePic, {
+      resource_type: "auto", // Automatically handles large images or videos
+    });
+
     const updatedUser = await User.findByIdAndUpdate(
       userId,
       { profilePic: uploadResponse.secure_url },
@@ -120,7 +125,6 @@ export const updateProfile = async (req, res) => {
     res.status(500).json({ message: "Internal Server Error" });
   }
 };
-
 // Check Authentication Controller
 export const checkAuth = (req, res) => {
   try {
